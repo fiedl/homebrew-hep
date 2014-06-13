@@ -1,8 +1,15 @@
 require "formula"
 class Genie < Formula
   homepage "http://genie.hepforge.org"
+
+  # Version 2.6.8
+  # url "https://www.hepforge.org/archive/genie/Genie-2.6.8.tar.gz"
+  # sha1 "0bb76cc04430aaffdf815ab0aaf44e6566b0f2fe"
+
+  # Version 2.8.0
   url "http://www.hepforge.org/archive/genie/Genie-2.8.0.tar.gz"
   sha1 "05dc62cd001f380121aa0b206e09a6dd8a493216"
+
 
   depends_on "cmake" => :build
   depends_on "homebrew/science/root"
@@ -23,10 +30,15 @@ class Genie < Formula
                           "--disable-silent-rules",
                           "--prefix=#{prefix}",
                           "--with-pythia6-lib=#{Formula['pythia8'].lib}"
+                          
+    # The g++ parameter `-ffriend-injection` is not recognized on Max OS X 10.9 Mavericks.
+    inreplace "src/make/Make.include", "-ffriend-injection", ""
+    
+    system "make"
     system "make", "install"
   end
 
   test do
-    system "test $(find #{include}/GENIE -maxdepth 1 |wc -l) -eq 44"
+    system "#{bin}/genie-config"
   end
 end
